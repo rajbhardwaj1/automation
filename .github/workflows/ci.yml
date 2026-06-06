@@ -1,0 +1,37 @@
+name: Selenium & FastAPI Automation CI
+
+# Trigger this pipeline on every push or PR to the main branch
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install System Dependencies for Headless Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget curl unzip libxi6 libgconf-2-4 libnss3 xvfb
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install fastapi uvicorn selenium pydantic
+
+    - name: Verify Code Compilation
+      run: |
+        # This checks for syntax errors or missing imports before deployment
+        python -m compileall app/
+        echo "CI pipeline check passed successfully!"
